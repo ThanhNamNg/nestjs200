@@ -4,8 +4,9 @@ import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { ConfigService } from '@nestjs/config';
-import { YModule } from './y/y.module';
 import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
+
 
 @Module({
   imports: [
@@ -18,13 +19,10 @@ import { UsersModule } from './users/users.module';
       }),
       inject: [ConfigService],
     }),
-
     ConfigModule.forRoot({
       isGlobal: true,}),
-
-    YModule,
-
-    UsersModule
+    UsersModule,
+    AuthModule, // import UsersModule here
   ],
   controllers: [AppController],
   providers: [AppService],

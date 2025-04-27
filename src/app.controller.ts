@@ -1,6 +1,8 @@
-import { Controller, Get, Render } from '@nestjs/common';
+import { Controller, Get, Render, Post, UseGuards,Request } from '@nestjs/common';
 import { AppService } from './app.service';
 import { ConfigService } from '@nestjs/config';
+import { AuthGuard } from '@nestjs/passport';
+import { LocalAuthGuard } from './auth/local-auth.guard';
 
 @Controller()
 export class AppController {
@@ -11,11 +13,19 @@ export class AppController {
   ) {}
 
   @Get()
-  @Render('home')
+  //@Render('home')
   getHello() {
 
-    console.log(this.configService.get('PORT'));
+    return { message: 'Hello World!' };
+    //console.log(this.configService.get('PORT'));
     // return this.appService.getHello();
     
+  }
+
+  @UseGuards(LocalAuthGuard)
+  @Post('/login')
+  handleLogin(@Request() req) {
+    // Handle login logic here
+    return req.user;
   }
 }

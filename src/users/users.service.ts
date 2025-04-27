@@ -1,26 +1,118 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { User } from './schemas/user.schemas';
+import * as bcrypt from 'bcryptjs';
+
 
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+
+  getHashPassword(password: string) {
+    const salt = bcrypt.genSaltSync(10);
+    const hash = bcrypt.hashSync(password, salt);
+    return hash;
+
   }
 
-  findAll() {
-    return `This action returns all users`;
+  isValidPassword(password: string, hash: string) {
+    return bcrypt.compareSync(password, hash);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async create(createUserDto: CreateUserDto) {
+  const hashPassword = this.getHashPassword(createUserDto.password);
+
+  const newCreateUserDto ={
+    ...createUserDto,
+    password: hashPassword,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  }
+  let user =  await this.userModel.create(newCreateUserDto);
+
+ 
+  
+  return 'This action adds a new user + ' + user;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async findAll() {
+    try{
+      const users = await this.userModel.find();
+      if (!users) {
+        throw new NotFoundException('No users found');
+      }
+      return users;
+    }catch (error) {
+      throw new NotFoundException('Error finding users');
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  // findOne(id: string) {
+    
+  //    return this.userModel.findById({_id : id})
+  //    .then((user) => {
+  //     if (!user) {
+  //       throw new NotFoundException('User not found');
+  //     }
+  //     return user;
+  //   }).catch(() => {
+  //     throw new NotFoundException('Error finding user');
+  //   });
+   
+  // }
+
+    async findOne(id: string) {
+      try {
+        const user = await this.userModel.findById(id);
+        if (!user) {
+          throw new NotFoundException('User not found');
+        }
+        return user;
+      }catch (error) {
+        throw new NotFoundException('Error finding user');
+      }
+    }
+
+    async findOneByEmail(email: string) {
+      try {
+        const user = await this.userModel.findOne({email});
+        if (!user) {
+          throw new NotFoundException('User not found');
+        }
+        return user;
+      }catch (error) {
+        throw new NotFoundException('Error finding user');
+      }
+    }
+
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    try {
+      const user = await this.userModel.findByIdAndUpdate(id, updateUserDto, { new: true });  
+                                                                                              //       Đây là options:
+                                                                                              // - Nếu new: true ➔ hàm sẽ trả về bản ghi mới đã được cập nhật.
+                                                                                              // - Nếu không có new: true (hoặc new: false) ➔ trả về bản ghi cũ trước khi update.
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      return user;
+    } catch (error) {
+      throw new NotFoundException('Error updating user');
+    }
   }
+
+  async remove(id: string) {
+   try { 
+    const user = await this.userModel.findByIdAndDelete(id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
+   }catch (error) {
+      throw new NotFoundException('Error deleting user');
+    }
+  }
+  
 }
