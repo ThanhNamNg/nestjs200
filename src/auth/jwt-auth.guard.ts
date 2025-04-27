@@ -1,14 +1,24 @@
 
-import { Injectable } from '@nestjs/common';
+import {
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
-export class JwtAuthGuard extends AuthGuard('jwt') {}
+export class JwtAuthGuard extends AuthGuard('jwt') {
+  canActivate(context: ExecutionContext) {
+    // Add your custom authentication logic here
+    // for example, call super.logIn(request) to establish a session.
+    return super.canActivate(context);
+  }
 
-// AuthGuard('jwt') nghĩa là sử dụng cái strategy tên 'jwt' để xác thực.
-
-// 'jwt' chính là cái tên mặc định mà JwtStrategy đăng ký vào Passport khi bạn viết extends PassportStrategy(Strategy) (cái Strategy đó là từ passport-jwt ra).
-
-// Thành ra, JwtAuthGuard sẽ tự động kích hoạt JwtStrategy mỗi khi một request vào.
-
-
+  handleRequest(err, user, info) {
+    // You can throw an exception based on either "info" or "err" arguments
+    if (err || !user) {
+      throw err || new UnauthorizedException('Token expired or invalid - please login again namnt2');
+    }
+    return user;
+  }
+}

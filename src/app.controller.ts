@@ -32,7 +32,7 @@ export class AppController {
     return this.authService.login(req.user); // Return user object
   }
 
-  @UseGuards(JwtAuthGuard)
+  //@UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Request() req) {
     return req.user;
