@@ -22,6 +22,8 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe());
 
+  app.enableCors(); // Cho phép mọi domain gọi
+
   await app.listen(configService.get<string>('PORT') || 3000);
 }
 bootstrap();

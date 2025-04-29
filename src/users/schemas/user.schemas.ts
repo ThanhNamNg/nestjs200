@@ -2,7 +2,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 
-export type UserDocument = HydratedDocument<User>;
+export type UserDocument = HydratedDocument<User>; //tạo kiểu dữ liệu cho user(document của mongoose giống như bảng trong sql)
 
 @Schema({timestamps: true})
 export class User {
@@ -38,4 +38,4 @@ export class User {
 
 }
 
-export const UserSchema = SchemaFactory.createForClass(User);
+export const UserSchema = SchemaFactory.createForClass(User); //tạo schema.
