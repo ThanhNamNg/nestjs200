@@ -12,28 +12,26 @@ import { CompaniesModule } from './companies/companies.module';
 @Module({
   imports: [
     //MongooseModule.forRoot('mongodb+srv://namjkl11:Nam%4028052004@cluster0.2lhf28c.mongodb.net/'),
-    
+
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         uri: configService.get<string>('MONGODB_URI'),
-           connectionFactory: (connection) => {
+        connectionFactory: (connection) => {
           connection.plugin(softDeletePlugin);
           return connection;
-        }
-
+        },
       }),
       inject: [ConfigService],
     }),
     ConfigModule.forRoot({
-      isGlobal: true,}),
+      isGlobal: true,
+    }),
     UsersModule,
     AuthModule,
     CompaniesModule, // import UsersModule here
   ],
   controllers: [AppController],
-  providers: [AppService,
-
-  ],
+  providers: [AppService],
 })
 export class AppModule {}

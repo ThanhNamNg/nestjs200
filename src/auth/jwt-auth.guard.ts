@@ -1,4 +1,3 @@
-
 import {
   ExecutionContext,
   Injectable,
@@ -10,8 +9,7 @@ import { IS_PUBLIC_KEY } from 'src/decorator/customize';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
-
-    constructor(private reflector: Reflector) {
+  constructor(private reflector: Reflector) {
     super();
   }
   canActivate(context: ExecutionContext) {
@@ -27,7 +25,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   handleRequest(err, user, info) {
     // You can throw an exception based on either "info" or "err" arguments
     if (err || !user) {
-      throw err || new UnauthorizedException('Token expired or invalid - please login again namnt2');
+      throw err || new UnauthorizedException('Token không hợp lệ');
     }
     return user;
   }

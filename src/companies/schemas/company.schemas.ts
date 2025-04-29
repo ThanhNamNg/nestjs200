@@ -1,51 +1,48 @@
-
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 
-export type CompanyDocument = HydratedDocument<Company>;
+export type CompanyDocument = HydratedDocument<Company>; ////tạo kiểu dữ liệu cho company(document của mongoose giống như bảng trong sql)
 
-@Schema({timestamps: true})
+@Schema({ timestamps: true })
 export class Company {
-  @Prop()
+  @Prop({ type: String, required: false })
   name: string;
 
-  @Prop()
+  @Prop({ type: String, required: false })
   address: string;
 
-  @Prop()
+  @Prop({ type: String, required: false })
   desrciption: string;
 
-@Prop()
-    createdBy: {
-        _id: string;
-        email: string;
-    };
+  @Prop({ type: String, required: false })
+  createdBy: {
+    _id: string;
+    email: string;
+  };
 
-    
-    @Prop()
-    updatedBy: {
-        _id: string;
-        email: string;
-    };
+  @Prop({ type: String, required: false })
+  updatedBy: {
+    _id: string;
+    email: string;
+  };
 
-     @Prop()
-    deletedBy: {
-        _id: string;
-        email: string;
-    };
+  @Prop({ type: String, required: false })
+  deletedBy: {
+    _id: string;
+    email: string;
+  };
 
-  @Prop()
+  @Prop({ type: String, required: false })
   createdAt: Date;
 
-  @Prop()
+  @Prop({ type: String, required: false })
   updatedAt: Date;
 
-   @Prop()
+  @Prop({ type: String, required: false })
   isDeleted: boolean;
 
-  @Prop()
+  @Prop({ type: String, required: false })
   deletedAt: Date;
-
 }
 
-export const CompanySchema = SchemaFactory.createForClass(Company);
+export const CompanySchema = SchemaFactory.createForClass(Company); //tạo schema.

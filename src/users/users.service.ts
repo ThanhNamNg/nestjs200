@@ -27,8 +27,8 @@ export class UsersService {
   const hashPassword = this.getHashPassword(createUserDto.password);
 
   const newCreateUserDto ={
-    ...createUserDto,
-    password: hashPassword,
+    ...createUserDto,// Sao chép toàn bộ các field từ createUserDto
+    password: hashPassword,  // Ghi đè field password bằng password đã mã hóa
    
   }
   let user =  await this.userModel.create(newCreateUserDto);
