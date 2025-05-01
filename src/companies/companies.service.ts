@@ -68,11 +68,37 @@ export class CompaniesService {
         return updatedCompany + 'Update thành công ty';
       }
     } catch (error) {
-      return `Error updating company loi roi wi si ma ${error}`;
+      return `Lỗi khi update company ${error}`;
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} company`;
+  async remove(id: string, user: IUser) {
+    const { _id, email, role } = user; // lấy các trường thông tin cụ thể từ user
+    try {
+      const company = await this.companyModel.findOne({
+        _id: id,
+        //deleted: false,
+      });
+
+      if (!company) {
+        return 'Company not found';
+      } else {
+        await this.companyModel.findByIdAndUpdate(
+          id,
+          {
+            deletedBy: {
+              _id: user._id,
+              email: user.email,
+            },
+          },
+          { new: true },
+        );
+
+        const deletedCompany = await this.companyModel.softDelete({ _id: id });
+        return deletedCompany;
+      }
+    } catch (error) {
+      return `Lỗi khi xóa company ${error}`;
+    }
   }
 }
