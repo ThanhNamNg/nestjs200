@@ -12,7 +12,7 @@ export class Company {
   address: string;
 
   @Prop({ type: String, required: false })
-  desrciption: string;
+  description: string;
 
   @Prop({ type: Object, required: false })
   createdBy: {

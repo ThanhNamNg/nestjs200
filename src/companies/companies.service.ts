@@ -45,8 +45,31 @@ export class CompaniesService {
     return `This action returns a #${id} company`;
   }
 
-  update(id: number, updateCompanyDto: UpdateCompanyDto) {
-    return `This action updates a #${id} company`;
+  async update(id: string, updateCompanyDto: UpdateCompanyDto, user: IUser) {
+    const { _id, name, email, role } = user; // lấy các trường thông tin cụ thể từ user
+    try {
+      const company = await this.companyModel.findById(id);
+      if (!company) {
+        return 'Company not found';
+      } else {
+        const updatedCompany = await this.companyModel.findByIdAndUpdate(
+          id,
+          {
+            //findByIdAndUpdate(id, update, options?)
+            ...updateCompanyDto,
+            updatedBy: {
+              _id,
+              email,
+            },
+          },
+          { new: true },
+        ); // thêm để trả về document đã cập nhật
+
+        return updatedCompany + 'Update thành công ty';
+      }
+    } catch (error) {
+      return `Error updating company loi roi wi si ma ${error}`;
+    }
   }
 
   remove(id: number) {
