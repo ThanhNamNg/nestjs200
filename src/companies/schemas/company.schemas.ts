@@ -14,19 +14,19 @@ export class Company {
   @Prop({ type: String, required: false })
   desrciption: string;
 
-  @Prop({ type: String, required: false })
+  @Prop({ type: Object, required: false })
   createdBy: {
     _id: string;
     email: string;
   };
 
-  @Prop({ type: String, required: false })
+  @Prop({ type: Object, required: false })
   updatedBy: {
     _id: string;
     email: string;
   };
 
-  @Prop({ type: String, required: false })
+  @Prop({ type: Object, required: false })
   deletedBy: {
     _id: string;
     email: string;
