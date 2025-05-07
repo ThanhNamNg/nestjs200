@@ -187,4 +187,27 @@ export class UsersService {
       throw new NotFoundException('Error deleting user');
     }
   }
+
+  updateUserToken = async (refreshToken: string, id: string) => {
+    try {
+      const newUser = await this.userModel.updateOne(
+        { _id: id },
+        {
+          refreshToken,
+        },
+        {
+          new: true,
+        },
+      );
+      //       Đây là options:
+      // - Nếu new: true ➔ hàm sẽ trả về bản ghi mới đã được cập nhật.
+      // - Nếu không có new: true (hoặc new: false) ➔ trả về bản ghi cũ trước khi update.
+      if (!newUser) {
+        throw new NotFoundException('User not found');
+      }
+      return newUser;
+    } catch (error) {
+      throw new NotFoundException('Error updating user');
+    }
+  };
 }

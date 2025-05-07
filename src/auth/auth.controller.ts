@@ -5,6 +5,8 @@ import {
   UseGuards,
   Request,
   Body,
+  Req,
+  Res,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AppService } from 'src/app.service';
@@ -16,6 +18,7 @@ import {
   CreateUserDtoAuth,
 } from 'src/users/dto/create-user.dto';
 import { IUser } from 'src/users/users.interface';
+import { Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -33,9 +36,9 @@ export class AuthController {
   @Public()
   @UseGuards(LocalAuthGuard)
   @Post('/login')
-  handleLogin(@Request() req) {
+  handleLogin(@Req() req, @Res({ passthrough: true }) response: Response) {
     // Handle login logic here
-    return this.authService.login(req.user); // Return user object
+    return this.authService.login(req.user, response); // Return user object
   }
 
   @ResponseMessage('Register a new user')

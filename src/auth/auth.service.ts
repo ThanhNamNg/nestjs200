@@ -16,6 +16,8 @@ import {
 import { UserDocument } from 'src/users/schemas/user.schemas';
 import { IUser } from 'src/users/users.interface';
 import { UsersService } from 'src/users/users.service';
+import { Response } from 'express';
+import ms from 'ms';
 
 @Injectable()
 export class AuthService {
@@ -54,7 +56,7 @@ export class AuthService {
     }
   }
 
-  async login(user: IUser) {
+  async login(user: IUser, response: Response) {
     const { _id, name, email, role } = (user as any)._doc;
 
     //là destructuring assignment trong JavaScript/TypeScript, dùng để trích xuất các thuộc tính cụ thể từ đối tượng user.
@@ -67,9 +69,16 @@ export class AuthService {
       email,
       role,
     };
+    const rf_token = this.createRefreshToken(payload);
+    this.usersService.updateUserToken(rf_token, _id);
+
+    response.cookie('refreshToken ', rf_token, {
+      maxAge: ms(this.configService.get<string>('JWT_REFRESH_EXPRIE')),
+      httpOnly: true,
+    });
     return {
       access_token: this.jwtService.sign(payload),
-      rf_token: this.createRefreshToken(payload),
+      rf_token: rf_token,
       user: {
         _id,
         name,
