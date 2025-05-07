@@ -20,7 +20,28 @@ async function bootstrap() {
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
   app.setViewEngine('ejs');
 
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe(
+      {
+        whitelist: true,
+      },
+      // Tự động loại bỏ trường không có trong DTO
+
+      //       Khi bạn dùng ValidationPipe, NestJS sẽ:
+
+      // Chuyển đổi dữ liệu JSON nhận được thành instance của class DTO (dùng class-transformer).
+
+      // Kiểm tra dữ liệu theo các decorator như @IsString(), @IsEmail(), @MinLength(), v.v. (dùng class-validator).
+
+      // Tùy vào config (ví dụ whitelist), nó có thể:
+
+      // Xóa field không khai báo trong DTO.
+
+      // Báo lỗi nếu có field lạ (forbidNonWhitelisted: true).
+
+      // Tự động ép kiểu (transform: true).
+    ),
+  );
 
   app.enableCors(); // Cho phép mọi domain gọi
 

@@ -10,7 +10,7 @@ import { Reflector } from '@nestjs/core';
 
 export interface Response<T> {
   statusCode: number;
-  messager?: string;
+  message?: string;
   data: T;
 }
 
@@ -27,7 +27,7 @@ export class TransformInterceptor<T>
     return next.handle().pipe(
       map((data) => ({
         statusCode: context.switchToHttp().getResponse().statusCode,
-        messager:
+        message:
           this.reflector.get<string>(
             'response_message',
             context.getHandler(),

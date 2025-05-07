@@ -8,6 +8,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './passport/jwt.strategy';
 import ms from 'ms';
 import { AuthController } from './auth.controller';
+import { MongooseModule } from '@nestjs/mongoose';
+import { User } from 'src/decorator/customize';
+import { UserSchema } from 'src/users/schemas/user.schemas';
 @Module({
   imports: [
     UsersModule,
@@ -16,9 +19,9 @@ import { AuthController } from './auth.controller';
       // how to use async config with .env file
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_ACCESS_TOKEN'),
+        secret: configService.get<string>('JWT_ACCESS_TOKEN_SECRET'),
         signOptions: {
-          expiresIn: ms(configService.get<string>('JWT_EXPIRES_EXPRIE')), // Set token expiration time
+          expiresIn: ms(configService.get<string>('JWT_EXPIRES_EXPRIE')) / 1000, // Set token expiration time
         }, // Set token expiration time
       }),
       inject: [ConfigService],
