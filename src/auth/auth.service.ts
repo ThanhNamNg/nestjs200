@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
@@ -72,13 +72,12 @@ export class AuthService {
     const rf_token = this.createRefreshToken(payload);
     this.usersService.updateUserToken(rf_token, _id);
 
-    response.cookie('refreshToken ', rf_token, {
-      maxAge: ms(this.configService.get<string>('JWT_REFRESH_EXPRIE')),
+    response.cookie('refreshToken', rf_token, {
       httpOnly: true,
+      maxAge: ms(this.configService.get<string>('JWT_REFRESH_EXPRIE')) * 1000,
     });
     return {
-      access_token: this.jwtService.sign(payload),
-      rf_token: rf_token,
+      access_token: this.jwtService.sign(payload), //Tạo access token từ payload và lưu vào thuộc tính access_token.
       user: {
         _id,
         name,
@@ -94,5 +93,57 @@ export class AuthService {
       expiresIn: this.configService.get<string>('JWT_REFRESH_EXPRIE'),
     });
     return refrest_token;
+  };
+
+  processNewToken = async (rf_token: string, response: Response) => {
+    try {
+      // giai ma refrersh token
+      this.jwtService.verify(rf_token, {
+        secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
+      });
+      const user = await this.usersService.findUserByRefreshToken(rf_token);
+
+      if (user) {
+        const { _id, name, email, role } = (user as any)._doc;
+
+        //là destructuring assignment trong JavaScript/TypeScript, dùng để trích xuất các thuộc tính cụ thể từ đối tượng user.
+
+        const payload = {
+          sub: 'token login',
+          iss: 'from server',
+          _id,
+          name,
+          email,
+          role,
+        };
+        const new_rf_token = this.createRefreshToken(payload);
+        this.usersService.updateUserToken(new_rf_token, _id);
+
+        response.clearCookie('refreshToken');
+
+        response.cookie('refreshToken', new_rf_token, {
+          httpOnly: true,
+          maxAge:
+            ms(this.configService.get<string>('JWT_REFRESH_EXPRIE')) * 1000,
+        });
+        return {
+          access_token: this.jwtService.sign(payload), //Tạo access token từ payload và lưu vào thuộc tính access_token.
+          user: {
+            _id,
+            name,
+            email,
+            role,
+          },
+        };
+      } else {
+        throw new BadRequestException(
+          'Refresh Token không hợp lệ vui lòng đăng nhập lại.',
+        );
+      }
+    } catch (error) {
+      throw new BadRequestException(
+        'Refresh Token không hợp lệ vui lòng đăng nhập lại.',
+      );
+    }
   };
 }

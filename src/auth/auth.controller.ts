@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   UseGuards,
-  Request,
   Body,
   Req,
   Res,
@@ -18,18 +17,11 @@ import {
 } from 'src/users/dto/create-user.dto';
 import { IUser } from 'src/users/users.interface';
 import { Response } from 'express';
+import { Request } from 'express';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
-
-  @Get()
-  //@Render('home')
-  getHello() {
-    return { message: 'Hello World!' };
-    //console.log(this.configService.get('PORT'));
-    // return this.appService.getHello();
-  }
 
   @ResponseMessage('Đăng nhập thành công')
   @Public()
@@ -57,7 +49,7 @@ export class AuthController {
   //@UseGuards(JwtAuthGuard)
 
   @Get('profile')
-  getProfile(@Request() req) {
+  getProfile(@Req() req) {
     return req.user;
   }
 
@@ -65,5 +57,17 @@ export class AuthController {
   @Get('/account')
   async handleGetAccount(@User() user: IUser) {
     return await { user };
+  }
+
+  @ResponseMessage('lấy thông tin user từ refresh token thành công')
+  @Public()
+  @Get('/refrest')
+  async handleRefreshToken(
+    @Req() req: Request,
+    @Res({ passthrough: true }) response: Response,
+    //Nếu không có passthrough: true, dòng return { access_token: ... } sẽ không hoạt động, vì Nest sẽ ngừng xử lý response khi bạn dùng @Res().
+  ) {
+    const refrest_token = req.cookies['refreshToken'];
+    return this.authService.processNewToken(refrest_token, response);
   }
 }

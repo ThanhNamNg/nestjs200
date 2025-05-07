@@ -210,4 +210,10 @@ export class UsersService {
       throw new NotFoundException('Error updating user');
     }
   };
+
+  async findUserByRefreshToken(refreshToken: string) {
+    return await this.userModel.findOne({
+      refreshToken: refreshToken,
+    });
+  }
 }
