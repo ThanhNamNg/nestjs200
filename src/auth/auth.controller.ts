@@ -8,11 +8,10 @@ import {
   Req,
   Res,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { AppService } from 'src/app.service';
+
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './local-auth.guard';
-import { Public, ResponseMessage } from 'src/decorator/customize';
+import { Public, ResponseMessage, User } from 'src/decorator/customize';
 import {
   CreateUserDto,
   CreateUserDtoAuth,
@@ -60,5 +59,11 @@ export class AuthController {
   @Get('profile')
   getProfile(@Request() req) {
     return req.user;
+  }
+
+  @ResponseMessage('lấy thông tin thành công')
+  @Get('/account')
+  async handleGetAccount(@User() user: IUser) {
+    return await { user };
   }
 }
