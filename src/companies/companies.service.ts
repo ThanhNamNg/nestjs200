@@ -42,8 +42,8 @@ export class CompaniesService {
   async findAll(currentPage: number, limit: number, qs: string) {
     const { filter, projection, population } = aqp(qs);
 
-    delete filter.page;
-    delete filter.limit;
+    delete filter.current;
+    delete filter.pageSize;
 
     let { sort } = aqp(qs);
     let offset = (+currentPage - 1) * +limit;
@@ -88,8 +88,8 @@ export class CompaniesService {
       if (!company) {
         return 'Company not found';
       } else {
-        const updatedCompany = await this.companyModel.findByIdAndUpdate(
-          id,
+        const updatedCompany = await this.companyModel.updateOne(
+          { _id: id },
           {
             //findByIdAndUpdate(id, update, options?)
             ...updateCompanyDto,
@@ -101,7 +101,7 @@ export class CompaniesService {
           { new: true },
         ); // thêm để trả về document đã cập nhật
 
-        return updatedCompany + 'Update thành công ty';
+        return updatedCompany;
       }
     } catch (error) {
       return `Lỗi khi update company ${error}`;

@@ -76,8 +76,8 @@ export class UsersService {
   async findAll(currentPage: number, limit: number, qs) {
     const { filter, projection, population } = aqp(qs);
 
-    delete filter.page;
-    delete filter.limit;
+    delete filter.current;
+    delete filter.pageSize;
 
     let { sort } = aqp(qs);
     let offset = (+currentPage - 1) * +limit;

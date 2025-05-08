@@ -70,4 +70,13 @@ export class AuthController {
     const refrest_token = req.cookies['refreshToken'];
     return this.authService.processNewToken(refrest_token, response);
   }
+
+  @ResponseMessage('Đăng xuất thành công')
+  @Get('/logout')
+  async logout(
+    @User() user: IUser,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    return this.authService.logout(user, response);
+  }
 }

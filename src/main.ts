@@ -47,7 +47,13 @@ async function bootstrap() {
   //congfig cookie
   app.use(cookieParser());
 
-  app.enableCors(); // Cho phép mọi domain gọi
+  app.enableCors({
+    origin: true, // Chấp nhận yêu cầu từ mọi nguồn (mọi domain)
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Cho phép các phương thức HTTP này
+    preflightContinue: false, // Không tiếp tục xử lý sau phản hồi preflight
+    credentials: true, // Cho phép gửi cookie trong yêu cầu
+  });
+  // Cho phép mọi domain gọi
 
   //cofig version
   app.setGlobalPrefix('api');

@@ -18,15 +18,17 @@ import { IUser } from 'src/users/users.interface';
 export class CompaniesController {
   constructor(private readonly companiesService: CompaniesService) {}
 
+  @ResponseMessage('Tạo công ty thành công')
   @Post()
   create(@Body() createCompanyDto: CreateCompanyDto, @User() user: IUser) {
     return this.companiesService.create(createCompanyDto, user);
   }
 
+  @ResponseMessage('Lấy danh sách và phân trang thành công')
   @Get()
   findAll(
-    @Query('page') currentPage: string,
-    @Query('limit') limit: string,
+    @Query('current') currentPage: string,
+    @Query('pageSize') limit: string,
     @Query() qs: string,
   ) {
     return this.companiesService.findAll(+currentPage, +limit, qs);
@@ -37,6 +39,7 @@ export class CompaniesController {
     return this.companiesService.findOne(+id);
   }
 
+  @ResponseMessage('Sửa công ty thành công')
   @Patch(':id')
   update(
     @Param('id') id: string,

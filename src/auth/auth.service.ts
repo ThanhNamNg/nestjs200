@@ -146,4 +146,17 @@ export class AuthService {
       );
     }
   };
+
+  logout = async (user: IUser, response: Response) => {
+    try {
+      const { _id } = user;
+      await this.usersService.updateUserToken('', _id);
+      response.clearCookie('refreshToken');
+      return {
+        message: 'Đăng xuất thành công',
+      };
+    } catch (error) {
+      throw error;
+    }
+  };
 }
