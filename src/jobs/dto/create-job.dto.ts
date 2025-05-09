@@ -11,9 +11,13 @@ export class CreateJobDto {
   company: {
     _id: string;
     name: string;
+    logo: string;
   };
   @validator.IsNotEmpty({ message: 'Mức lương không được để trống' })
   salary: number;
+
+  @validator.IsNotEmpty({ message: 'Địa chị của job không được để trống' })
+  location: number;
 
   @validator.IsNotEmpty({ message: 'Số lượng không được để trống' })
   quantity: number;

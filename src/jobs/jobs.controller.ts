@@ -11,11 +11,11 @@ import {
 import { JobsService } from './jobs.service';
 import { CreateJobDto } from './dto/create-job.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
-import { ResponseMessage, User } from 'src/decorator/customize';
+import { Public, ResponseMessage, User } from 'src/decorator/customize';
 import { IUser } from 'src/users/users.interface';
 
 @ResponseMessage('Thêm công việc thành công')
-@Controller('job')
+@Controller('jobs')
 export class JobsController {
   constructor(private readonly jobsService: JobsService) {}
   @ResponseMessage('Tạo công việc thành công')
@@ -25,6 +25,7 @@ export class JobsController {
   }
 
   @Get()
+  @Public()
   @ResponseMessage('Lấy danh sách công việc thành công')
   findAll(
     @Query('current') currentPage: string,
@@ -37,6 +38,7 @@ export class JobsController {
 
   // Vì bạn gán nó vào qs: string, điều này sai kiểu dữ liệu — thực tế qs sẽ là một object, không phải string.
 
+  @Public()
   @ResponseMessage('Lấy công việc theo id thành công')
   @Get(':id')
   findOne(@Param('id') id: string) {

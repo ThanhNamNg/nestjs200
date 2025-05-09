@@ -32,7 +32,7 @@ export class CompaniesService {
             email: user.email,
           },
         });
-        return 'This action adds a new company + ' + company;
+        return company;
       }
     } catch (error) {
       return `Error creating company loi roi wi si ma ${error}`;
@@ -77,8 +77,16 @@ export class CompaniesService {
     };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} company`;
+  async findOne(id: string) {
+    try {
+      const company = await this.companyModel.findById(id);
+      if (!company) {
+        return 'Company not found';
+      }
+      return company;
+    } catch (error) {
+      return `Lỗi khi lấy thông tin company ${error}`;
+    }
   }
 
   async update(id: string, updateCompanyDto: UpdateCompanyDto, user: IUser) {

@@ -35,39 +35,33 @@ export class JobsService {
 
   async findAll(currentPage: number, limit: number, qs: string) {
     try {
-      const { filter, projection, population } = aqp(qs);
+      const { filter, sort, population } = aqp(qs);
       //Hàm aqp() từ thư viện api-query-params giúp bạn chuyển query string thành object MongoDB gồm:
 
       delete filter.current;
       delete filter.pageSize;
 
-      let { sort } = aqp(qs);
       let offset = (+currentPage - 1) * +limit;
       let defaultLimit = +limit ? +limit : 10;
 
       const totalItems = (await this.jobModel.find(filter)).length;
       const totalPages = Math.ceil(totalItems / defaultLimit);
 
-      if (isEmpty(sort)) {
-        // @ts-ignore: Unreachable code error
-        sort = '-updatedAt';
-      }
-
       const result = await this.jobModel
         .find(filter)
         .skip(offset)
         .limit(defaultLimit)
-        // @ts-ignore: Unreachable code error
-        .sort(sort)
-        .select(projection)
+        .sort(sort as any)
         .populate(population);
 
       return {
-        totalItems,
-        totalPages,
-        currentPage,
-        limit,
-        data: result,
+        meta: {
+          current: currentPage,
+          pageSize: limit,
+          pages: totalPages,
+          total: totalItems,
+        },
+        result,
       };
     } catch (error) {
       throw new Error('Error finding jobs: ' + error.message);

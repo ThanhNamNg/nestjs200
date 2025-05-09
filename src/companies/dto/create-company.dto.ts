@@ -9,6 +9,9 @@ export class CreateCompanyDto {
 
   @validator.IsNotEmpty({ message: 'Mô tả không được để trống' })
   description: string;
+
+  @validator.IsNotEmpty({ message: 'Logo không được để trống' })
+  logo: string;
 }
 
 // DTO dùng để:
