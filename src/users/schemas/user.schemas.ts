@@ -4,6 +4,9 @@ import mongoose, { HydratedDocument } from 'mongoose';
 export type UserDocument = HydratedDocument<User>; //tạo kiểu dữ liệu cho user(document của mongoose giống như bảng trong sql)
 
 @Schema({ timestamps: true })
+// Tự động thêm trường createdAt và updatedAt vào tài liệu khi bạn lưu vào MongoDB.
+
+// MongoDB sẽ quản lý tự động thời gian cho các trường này mà bạn không cần phải làm thủ công.
 export class User {
   @Prop()
   name: string;

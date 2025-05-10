@@ -1,14 +1,5 @@
-import {
-  IsEmail,
-  IsMongoId,
-  IsNotEmpty,
-  IsString,
-  IsArray,
-  ValidateNested,
-  IsObject,
-  IsUrl,
-} from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsEmail, IsMongoId, IsNotEmpty } from 'class-validator';
+
 import mongoose from 'mongoose';
 
 export class CreateResumeDto {
@@ -38,9 +29,6 @@ export class CreateResumeDto {
 export class CreateUserCVDto {
   @IsNotEmpty({ message: 'Url không được để trống' })
   url: string;
-
-  @IsNotEmpty({ message: 'Trạng thái không được để trống' })
-  status: string;
 
   @IsNotEmpty({ message: 'CompanyId không được để trống' })
   @IsMongoId({ message: 'JobId không hợp lệ phải là mongoID' })

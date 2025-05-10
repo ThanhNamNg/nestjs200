@@ -1,5 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument, ObjectId } from 'mongoose';
+import { Company } from 'src/companies/schemas/company.schemas';
+import { Job } from 'src/jobs/schemas/job.schemas';
 
 export type ResumeDocument = HydratedDocument<Resume>; ////tạo kiểu dữ liệu cho Resume(document của mongoose giống như bảng trong sql)
 //ResumeDocument = document MongoDB của Resume, có đầy đủ các thuộc tính của Resume và các method của Mongoose (save(), toObject(), populate(), v.v).
@@ -27,10 +29,12 @@ export class Resume {
   @Prop()
   status: string;
 
-  @Prop()
+  // @Prop()
+  // companyId: mongoose.Schema.Types.ObjectId;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Company.name })
   companyId: mongoose.Schema.Types.ObjectId;
 
-  @Prop()
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Job.name })
   jobId: mongoose.Schema.Types.ObjectId;
 
   @Prop({ type: [Object] })

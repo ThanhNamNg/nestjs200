@@ -14,6 +14,7 @@ export class Company {
 
   @Prop({ type: String, required: false })
   description: string;
+
   @Prop({ type: String, required: false })
   logo: string;
 
