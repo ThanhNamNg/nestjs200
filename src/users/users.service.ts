@@ -114,14 +114,16 @@ export class UsersService {
 
   async findOne(id: string) {
     try {
-      const user = await this.userModel.findById(id);
-      const { password, ...newUser } = user.toObject();
+      const user = await this.userModel
+        .findOne({ _id: id })
+        .populate({ path: 'role', select: { _id: 1, name: 1 } });
+
       //.toObject() chuyển document Mongoose thành object JS thường.
 
       if (!user) {
         throw new NotFoundException('User not found');
       }
-      return newUser;
+      return user;
     } catch (error) {
       throw new NotFoundException('Error finding user');
     }
@@ -129,7 +131,9 @@ export class UsersService {
 
   async findOneByEmail(email: string) {
     try {
-      const user = await this.userModel.findOne({ email });
+      const user = await this.userModel
+        .findOne({ email })
+        .populate({ path: 'role', select: { _id: 1, permissions: 1 } });
       if (!user) {
         throw new NotFoundException('User not found');
       }
@@ -168,6 +172,10 @@ export class UsersService {
 
   async remove(id: string, user1: IUser) {
     try {
+      const checkAdmin = await this.userModel.findById({ _id: id });
+      if (checkAdmin.email === 'admin@gmail.com') {
+        throw new NotFoundException('Không thể xóa tài khoản admin');
+      }
       await this.userModel.findByIdAndUpdate(
         id,
         {

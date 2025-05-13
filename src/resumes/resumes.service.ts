@@ -149,7 +149,15 @@ export class ResumesService {
 
   async findCVByUser(user: IUser) {
     try {
-      const resumes = await this.resumeModel.find({ userId: user._id });
+      const resumes = await this.resumeModel
+        .find({ userId: user._id })
+        .sort({
+          createdAt: -1,
+        })
+        .populate([
+          { path: 'companyId', select: { name: 1 } },
+          { path: 'jobId', select: { name: 1 } },
+        ]);
       return resumes;
     } catch (error) {
       throw new BadRequestException('Lỗi tìm CV theo user');

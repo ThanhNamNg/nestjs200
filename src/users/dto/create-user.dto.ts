@@ -54,6 +54,10 @@ export class CreateUserDtoAuth {
   @validator.IsNotEmpty({ message: 'Tuổi không được để trống' })
   age: number;
 
+  @validator.IsNotEmpty({ message: 'Tuổi không được để trống' })
+  @validator.IsMongoId({ message: 'ID không hợp lệ' })
+  role: string;
+
   @validator.IsNotEmpty({ message: 'Giới tính không được để trống' })
   gender: string;
 
