@@ -18,10 +18,14 @@ import {
 import { IUser } from 'src/users/users.interface';
 import { Response } from 'express';
 import { Request } from 'express';
+import { RolesService } from 'src/roles/roles.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private roleService: RolesService,
+  ) {}
 
   @ResponseMessage('Đăng nhập thành công')
   @Public()
@@ -56,6 +60,8 @@ export class AuthController {
   @ResponseMessage('lấy thông tin thành công')
   @Get('/account')
   async handleGetAccount(@User() user: IUser) {
+    const permission = (await this.roleService.findOne(user.role._id)) as any;
+    user.permissions = permission.permissions;
     return await { user };
   }
 

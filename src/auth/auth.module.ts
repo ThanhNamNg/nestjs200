@@ -8,10 +8,17 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './passport/jwt.strategy';
 import ms from 'ms';
 import { AuthController } from './auth.controller';
+import { MongooseModule } from '@nestjs/mongoose';
+import { Role, RoleSchema } from 'src/roles/schemas/role.schema';
+import { RolesService } from 'src/roles/roles.service';
+import { RolesModule } from 'src/roles/roles.module';
 
 @Module({
   imports: [
+    MongooseModule.forFeature([{ name: Role.name, schema: RoleSchema }]),
+
     UsersModule,
+    RolesModule,
     PassportModule,
     JwtModule.registerAsync({
       // how to use async config with .env file
@@ -26,7 +33,7 @@ import { AuthController } from './auth.controller';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, RolesService],
   exports: [AuthService], // Export AuthService and JwtModule for use in other modules
 })
 export class AuthModule {}

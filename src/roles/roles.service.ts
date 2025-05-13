@@ -7,6 +7,7 @@ import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { IUser } from 'src/users/users.interface';
 
 import aqp from 'api-query-params';
+import { ADMIN_ROLE } from 'src/databases/sample';
 
 @Injectable()
 export class RolesService {
@@ -116,7 +117,7 @@ export class RolesService {
     const checkRole = await this.roleModel.findOne({ _id: id });
     if (!checkRole) {
       throw new BadRequestException('Role not found');
-    } else if (checkRole.name === 'ADMIN') {
+    } else if (checkRole.name === ADMIN_ROLE) {
       throw new BadRequestException('Cannot delete ADMIN role');
     }
     this.roleModel.updateOne(

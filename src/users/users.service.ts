@@ -6,17 +6,20 @@ import {
 import { CreateUserDto, CreateUserDtoAuth } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { User, UserDocument } from './schemas/user.schemas';
+import { User, UserDocument } from './schemas/user.schema';
 import * as bcrypt from 'bcryptjs';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { IUser } from './users.interface';
 import aqp from 'api-query-params';
 import { isEmpty } from 'class-validator';
+import { Role, RoleDocument } from 'src/roles/schemas/role.schema';
+import { USER_ROLE } from 'src/databases/sample';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: SoftDeleteModel<UserDocument>,
+    @InjectModel(Role.name) private roleModel: SoftDeleteModel<RoleDocument>,
   ) {}
 
   getHashPassword(password: string) {
@@ -39,6 +42,7 @@ export class UsersService {
     if (checkEmail) {
       throw new BadRequestException('Email: ' + email + ' đã tồn tại');
     }
+
     const hashPassword = this.getHashPassword(createUserDto.password);
 
     const newCreateUserDto = {
@@ -64,9 +68,10 @@ export class UsersService {
         'Email: ' + createUserDtoAuth.email + ' đã tồn tại',
       );
     }
+    const userRole = await this.roleModel.findOne({ name: USER_ROLE });
     const newCreateUserDto = {
       ...createUserDtoAuth, // Sao chép toàn bộ các field từ CreateUserDtoAuth
-      role: 'USER',
+      role: userRole?.id,
       password: hashPassword, // Ghi đè field password bằng password đã mã hóa
     };
     let user = await this.userModel.create(newCreateUserDto);
@@ -133,7 +138,7 @@ export class UsersService {
     try {
       const user = await this.userModel
         .findOne({ email })
-        .populate({ path: 'role', select: { _id: 1, permissions: 1 } });
+        .populate({ path: 'role', select: { name: 1 } });
       if (!user) {
         throw new NotFoundException('User not found');
       }
@@ -220,8 +225,10 @@ export class UsersService {
   };
 
   async findUserByRefreshToken(refreshToken: string) {
-    return await this.userModel.findOne({
-      refreshToken: refreshToken,
-    });
+    return await this.userModel
+      .findOne({
+        refreshToken: refreshToken,
+      })
+      .populate({ path: 'role', select: { name: 1 } });
   }
 }

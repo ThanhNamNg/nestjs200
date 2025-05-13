@@ -13,18 +13,21 @@ import {
   CreateUserDto,
   CreateUserDtoAuth,
 } from 'src/users/dto/create-user.dto';
-import { UserDocument } from 'src/users/schemas/user.schemas';
+import { UserDocument } from 'src/users/schemas/user.schema';
 import { IUser } from 'src/users/users.interface';
 import { UsersService } from 'src/users/users.service';
 import { Response } from 'express';
 import ms from 'ms';
+import { RolesService } from 'src/roles/roles.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
+
     private jwtService: JwtService,
     private configService: ConfigService,
+    private roleService: RolesService,
   ) {}
 
   async validateUser(email: string, pass: string): Promise<any> {
@@ -38,8 +41,13 @@ export class AuthService {
       if (isPasswordValid) {
         // check password
         // Remove password from user object before returning
-        const { password, ...result } = user;
-        return result;
+        const userRole = user.role as unknown as { _id: string; name: string };
+        const temp = await this.roleService.findOne(userRole._id);
+        const objUser = {
+          ...user.toObject(),
+          permissions: temp?.permissions ?? [],
+        };
+        return objUser;
       }
     }
   }
@@ -57,7 +65,7 @@ export class AuthService {
   }
 
   async login(user: IUser, response: Response) {
-    const { _id, name, email, role } = (user as any)._doc;
+    const { _id, name, email, role, permissions } = user;
 
     //là destructuring assignment trong JavaScript/TypeScript, dùng để trích xuất các thuộc tính cụ thể từ đối tượng user.
 
@@ -83,6 +91,7 @@ export class AuthService {
         name,
         email,
         role,
+        permissions,
       },
     };
   }
@@ -119,6 +128,9 @@ export class AuthService {
         const new_rf_token = this.createRefreshToken(payload);
         this.usersService.updateUserToken(new_rf_token, _id);
 
+        const userRole = user.role as unknown as { _id: string; name: string };
+        const temp = await this.roleService.findOne(userRole._id);
+
         response.clearCookie('refreshToken');
 
         response.cookie('refreshToken', new_rf_token, {
@@ -133,6 +145,7 @@ export class AuthService {
             name,
             email,
             role,
+            permissions: temp?.permissions ?? [],
           },
         };
       } else {
