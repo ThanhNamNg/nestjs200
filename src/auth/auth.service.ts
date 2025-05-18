@@ -42,7 +42,7 @@ export class AuthService {
         // check password
         // Remove password from user object before returning
         const userRole = user.role as unknown as { _id: string; name: string };
-        const temp = await this.roleService.findOne(userRole._id);
+        const temp = (await this.roleService.findOne(userRole._id)).toObject();
         const objUser = {
           ...user.toObject(),
           permissions: temp?.permissions ?? [],
